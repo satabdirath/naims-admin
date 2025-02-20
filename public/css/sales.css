@@ -1,0 +1,180 @@
+/* resources/css/sales.css */
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+
+.stage {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 5px;
+    background: #f4f4f4;
+}
+
+
+.container-fluid {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.details-panel {
+    width: 400px;
+    border-left: 1px solid #ddd;
+    padding: 20px;
+    background: #f9f9f9;
+    overflow-y: auto;
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 1000;
+}
+
+.stage {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 5px 0;
+    background: #f4f4f4;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table th, .table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+.close-icon {
+position: absolute;
+top: 10px;
+right: 40px; /* Adjust this so there is space for the View Activity link */
+font-size: 20px;
+cursor: pointer;
+}
+
+.activity-link {
+position: absolute;
+top: 10px;
+right: 10px; /* Position the View Activity link next to the close icon */
+font-weight: bold;
+color: #007bff;
+text-decoration: none;
+cursor: pointer;
+margin-right:20px;
+}
+
+.activity-icons i {
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.activity-icons span {
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.note-textarea {
+    width: 100%;
+    height: 100px;
+    margin-top: 10px;
+}
+
+.task-textarea {
+    width: 100%;
+    height: 60px;
+    margin-top: 10px;
+}
+
+.save-btn {
+    margin-top: 10px;
+    float: right;
+}
+
+.close-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.recent-activity {
+    margin-top: 20px;
+    padding: 10px;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+}
+
+.recent-activity p {
+    font-weight: bold;
+}
+
+/* Added spacing between the vertical icons and text */
+.activity-icon {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.horizontal-icons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.horizontal-icons i {
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.view-form-link {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.pipeline-container {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    min-width: 600px;
+}
+.pipeline-stage {
+    flex: 1;
+    min-width: 100px;
+    max-width: 250px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+.details-panel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    padding: 20px;
+    z-index: 1000;
+    display: none;
+}
+.close-icon {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+}

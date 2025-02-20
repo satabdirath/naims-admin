@@ -1,0 +1,67 @@
+/* resources/css/styles.css */
+body {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.sidebar {
+    width: 250px;
+    background: #f8f9fa;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.sidebar h5 {
+    margin-bottom: 20px;
+}
+
+.sidebar button {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.navbar {
+    width: calc(100% - 250px);
+    position: fixed;
+    top: 0;
+    left: 250px;
+    background: #007bff;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-icon {
+    background: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #007bff;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    .sidebar button {
+        width: auto;
+    }
+
+    .navbar {
+        width: 100%;
+        left: 0;
+    }
+}
