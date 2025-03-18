@@ -15,13 +15,37 @@
 @section('content')
 <div class="container-fluid">
     <div class="content">
-        <div class="d-flex justify-content-between mb-3">
-            <h3>Sales</h3>
-            <div>
-                <button class="btn btn-primary" id="pipelineBtn">Pipeline View</button>
-                <button class="btn btn-secondary" id="tableBtn">Table View</button>
-            </div>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Sales</h3>
+    <div>
+    <button class="btn btn-primary" id="pipelineBtn">Pipeline View</button>
+    <button class="btn btn-secondary" id="tableBtn">Table View</button><br>
+
+    <!-- Added mt-2 for spacing -->
+    <div class="dropdown w-100 mt-2">
+        <button class="btn btn-outline-danger dropdown-toggle w-100" id="lostLeadsBtn" data-bs-toggle="dropdown">
+            Lost <span class="text-danger fw-bold">({{ $lostLeads->count() }})</span>
+        </button>
+        <ul class="dropdown-menu p-2 lead-list w-100" id="lostLeadsDropdown" data-stage-id="0">
+            @if($lostLeads->count() > 0)
+                @foreach($lostLeads as $lead)
+                    <li class="border p-2 my-1 lead-card bg-danger text-white" 
+                        data-lead-id="{{ $lead->id }}" 
+                        data-name="{{ $lead->name }}"  
+                        draggable="true">
+                        {{ $lead->name }}
+                    </li>
+                @endforeach
+            @else
+                <li class="text-center text-muted p-2">No lost leads</li>
+            @endif
+        </ul>
+    </div>
+</div>
+</div>
+
+
+
 
         <div class="d-flex align-items-center gap-2">
 
@@ -138,25 +162,7 @@
     </ul>
 </div>
 
-<div class="dropdown">
-    <button class="btn btn-outline-danger dropdown-toggle" id="lostLeadsBtn" data-bs-toggle="dropdown">
-        Lost <span class="text-danger fw-bold">({{ $lostLeads->count() }})</span>
-    </button>
-    <ul class="dropdown-menu p-2 lead-list" id="lostLeadsDropdown" data-stage-id="0">
-        @if($lostLeads->count() > 0)
-            @foreach($lostLeads as $lead)
-                <li class="border p-2 my-1 lead-card bg-danger text-white" 
-                    data-lead-id="{{ $lead->id }}" 
-                    data-name="{{ $lead->name }}"  
-                    draggable="true">
-                    {{ $lead->name }}
-                </li>
-            @endforeach
-        @else
-            <li class="text-center text-muted p-2">No lost leads</li>
-        @endif
-    </ul>
-</div>
+
 
 
 
@@ -876,40 +882,70 @@ function initializeDragAndDrop() {
         event.originalEvent.dataTransfer.setData("leadId", $(this).data("lead-id"));
     });
 
-    $(".lead-list, #lostLeadsDropdown").on("dragover", function (event) {
+    $(".pipeline-stage").on("dragover", function (event) {
+        event.preventDefault();
+        $(this).addClass("drag-over"); // Visual feedback
+    });
+
+    $(".pipeline-stage").on("dragleave", function () {
+        $(this).removeClass("drag-over"); // Remove feedback
+    });
+
+    $(".pipeline-stage").on("drop", function (event) {
+        event.preventDefault();
+        $(this).removeClass("drag-over"); // Remove visual feedback
+
+        let leadId = event.originalEvent.dataTransfer.getData("leadId");
+        let leadElement = $(`.lead-card[data-lead-id="${leadId}"]`);
+        let leadList = $(this).find(".lead-list");
+
+        if (leadElement.length) {
+            // Ensure the lead list exists
+            if (leadList.length === 0) {
+                leadList = $("<ul class='list-unstyled lead-list'></ul>");
+                $(this).append(leadList);
+            }
+
+            leadList.append(leadElement);
+
+            let newStageId = $(this).data("stage-id") || leadList.data("stage-id");
+            updateLeadStage(leadId, newStageId);
+        }
+    });
+
+    $("#lostLeadsBtn").on("dragover", function (event) {
         event.preventDefault();
     });
 
-    $(".lead-list, #lostLeadsDropdown").on("drop", function (event) {
+    $("#lostLeadsBtn").on("drop", function (event) {
         event.preventDefault();
         let leadId = event.originalEvent.dataTransfer.getData("leadId");
         let leadElement = $(`.lead-card[data-lead-id="${leadId}"]`);
-        
-        if (leadElement.length) {
-            $(this).append(leadElement);
-            let newStageId = $(this).data("stage-id") || 0; // 0 for Lost
 
-            // AJAX request to update lead's stage
-            $.ajax({
-                url: "/update-lead-stage",
-                type: "POST",
-                data: {
-                    lead_id: leadId,
-                    stage_id: newStageId,
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function (response) {
-                    console.log("Lead moved successfully.");
-                },
-                error: function (error) {
-                    console.error("Error updating lead stage:", error);
-                }
-            });
+        if (leadElement.length) {
+            $("#lostLeadsDropdown").append(leadElement);
+            updateLeadStage(leadId, 0);
         }
     });
 }
 
-
+function updateLeadStage(leadId, newStageId) {
+    $.ajax({
+        url: "/update-lead-stage",
+        type: "POST",
+        data: {
+            lead_id: leadId,
+            stage_id: newStageId,
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (response) {
+            console.log("Lead moved successfully.");
+        },
+        error: function (error) {
+            console.error("Error updating lead stage:", error);
+        }
+    });
+}
 
 
 });

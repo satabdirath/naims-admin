@@ -72,8 +72,8 @@ public function fetchLeads()
                 'id' => $lead->id,
                 'name' => $lead->name,
                 'created_at' => $lead->created_at,
-                'stage_id' => optional($lead->stage)->id, // Send ID instead of name
-                'stage_name' => optional($lead->stage)->name, // Send stage name separately
+                'stage_id' => optional($lead->stage)->id ?? 0, // If no stage, mark as lost (0)
+                'stage_name' => optional($lead->stage)->name ?? 'Lost', // If no stage, label as 'Lost'
                 'source' => $lead->source,
                 'assigned_to' => $lead->assigned_to,
                 'remember' => $lead->task,
@@ -88,13 +88,19 @@ public function fetchLeads()
     // Fetch unique sources from leads, ignoring NULL values
     $sources = Lead::whereNotNull('source')->distinct()->pluck('source');
 
+    // Separate lost leads (stage_id = 0)
+    $lostLeads = $leads->where('stage_id', 0)->values(); // Get only lost leads
+    $activeLeads = $leads->where('stage_id', '!=', 0)->values(); // Get active leads
+
     return response()->json([
-        'leads' => $leads,
+        'leads' => $activeLeads, // Return only active leads in main list
+        'lostLeads' => $lostLeads, // Return lost leads separately
         'stages' => $stages,
         'users' => $users,
-        'sources' => $sources // Include sources in the response
+        'sources' => $sources
     ]);
 }
+
 
     
 

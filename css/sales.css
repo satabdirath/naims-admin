@@ -179,16 +179,42 @@ margin-right:20px;
 /* Individual pipeline stages */
 .pipeline-stage {
     flex: 1;
-    min-width: 160px; /* Adjust for better readability */
+    min-width: 160px;
     max-width: 250px;
-    min-height: 200px; /* Set a minimum height */
-    max-height: 400px; /* Set a maximum height */
+    min-height: 200px;
+    max-height: 400px;
     background-color: #f8f9fa;
     border-radius: 8px;
     padding: 10px;
-    overflow-y: auto; /* Enables vertical scrollbar if content exceeds max-height */
-    overflow-x: hidden; /* Hides horizontal overflow */
+    overflow-y: auto;
+    overflow-x: hidden;
     word-wrap: break-word;
+    position: relative; /* Required for the placeholder */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure the list inside always has some height for drop targets */
+.pipeline-stage .lead-list {
+    min-height: 100px; /* Ensures space for dropping */
+    flex-grow: 1; /* Makes it expand inside the stage */
+}
+
+/* Drag-over effect */
+.pipeline-stage.drag-over {
+    border: 2px dashed #007bff; /* Highlight when dragging over */
+}
+
+/* Placeholder for empty stages */
+.pipeline-stage:empty::after {
+    content: "Drop leads here";
+    color: #aaa;
+    font-size: 14px;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 
