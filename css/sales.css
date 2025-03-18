@@ -3,6 +3,8 @@
     flex-grow: 1;
     padding: 20px;
     margin-top: 30px;
+    overflow-y: auto;
+    margin-left:120px;
 }
 
 
@@ -20,11 +22,7 @@
     overflow: hidden;
 }
 
-.content {
-    flex-grow: 1;
-    padding: 20px;
-    overflow-y: auto;
-}
+
 
 .details-panel {
     width: 400px;
@@ -181,14 +179,18 @@ margin-right:20px;
 /* Individual pipeline stages */
 .pipeline-stage {
     flex: 1;
-    min-width: 150px; /* Adjust for better readability */
+    min-width: 160px; /* Adjust for better readability */
     max-width: 250px;
+    min-height: 200px; /* Set a minimum height */
+    max-height: 400px; /* Set a maximum height */
     background-color: #f8f9fa;
     border-radius: 8px;
     padding: 10px;
-    overflow: hidden; /* Prevents internal content from overflowing */
+    overflow-y: auto; /* Enables vertical scrollbar if content exceeds max-height */
+    overflow-x: hidden; /* Hides horizontal overflow */
     word-wrap: break-word;
 }
+
 
 /* Ensure responsiveness */
 @media (max-width: 1200px) { 
@@ -218,3 +220,43 @@ margin-right:20px;
     right: 15px;
     cursor: pointer;
 }
+
+
+.info-icon {
+    display: inline-block;
+    font-size: 12px;
+    background: #007bff;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    text-align: center;
+    line-height: 16px;
+    margin-left: 6px;
+    cursor: pointer;
+    position: relative;
+    font-weight: bold;
+}
+
+/* Tooltip Styling */
+.info-icon::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 140%; /* Moves it below the icon */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 6px;
+    font-size: 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    display: none;
+    z-index: 10;
+}
+
+/* Show Tooltip on Hover */
+.info-icon:hover::after {
+    display: block;
+}
+

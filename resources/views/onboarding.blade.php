@@ -6,7 +6,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
 
   
@@ -16,11 +15,7 @@
 <div class="container-fluid">
     <div class="content">
         <div class="d-flex justify-content-between mb-3">
-            <h3>Sales</h3>
-            <div>
-                <button class="btn btn-primary" id="pipelineBtn">Pipeline View</button>
-                <button class="btn btn-secondary" id="tableBtn">Table View</button>
-            </div>
+            <h3>Onboarding</h3>
         </div>
 
         <div class="d-flex align-items-center gap-2">
@@ -89,7 +84,7 @@
         Stage
     </button>
     <ul class="dropdown-menu p-3" id="stageDropdown">
-    @foreach($stages->whereBetween('id', [1, 6]) as $stage)
+    @foreach($stages->whereBetween('id', [6, 15]) as $stage)
 
             <li>
                 <input type="checkbox" class="stage-checkbox" value="{{ $stage->id }}" id="stage-{{ $stage->id }}">
@@ -125,53 +120,35 @@
 <input type="date" id="datePicker" class="d-none">
 
 
-<div class="dropdown">
-    <button class="btn btn-outline-secondary dropdown-toggle" id="activityFilterBtn" data-bs-toggle="dropdown">
-        Activity
-    </button>
-    <ul class="dropdown-menu" id="activityDropdown">
-        <li><a class="dropdown-item activity-option" data-value="today" style="cursor: pointer;">Today</a></li>
-        <li><a class="dropdown-item activity-option" data-value="this_week" style="cursor: pointer;">This Week</a></li>
-        <li><a class="dropdown-item activity-option" data-value="last_week" style="cursor: pointer;">Last Week</a></li>
-        <li><a class="dropdown-item activity-option" data-value="this_month" style="cursor: pointer;">This Month</a></li>
-        <li><a class="dropdown-item activity-option" data-value="last_month" style="cursor: pointer;">Last Month</a></li>
-    </ul>
-</div>
 
-<div class="dropdown">
-    <button class="btn btn-outline-danger dropdown-toggle" id="lostLeadsBtn" data-bs-toggle="dropdown">
-        Lost <span class="text-danger fw-bold">({{ $lostLeads->count() }})</span>
-    </button>
-    <ul class="dropdown-menu p-2 lead-list" id="lostLeadsDropdown" data-stage-id="0">
-        @if($lostLeads->count() > 0)
-            @foreach($lostLeads as $lead)
-                <li class="border p-2 my-1 lead-card bg-danger text-white" 
-                    data-lead-id="{{ $lead->id }}" 
-                    data-name="{{ $lead->name }}"  
-                    draggable="true">
-                    {{ $lead->name }}
-                </li>
-            @endforeach
-        @else
-            <li class="text-center text-muted p-2">No lost leads</li>
-        @endif
-    </ul>
-</div>
-
-
-
-
+            <button class="btn btn-outline-secondary">Activity</button>
         </div>
 
-<!-- Pipeline View -->
+    <!-- Pipeline View -->
+    <!-- Pipeline View -->
 <div id="pipelineView" class="d-block">
     <br><h6>Pipeline View</h6>
     <div class="pipeline-container">
-        @foreach($stages->whereBetween('id', [1, 6]) as $stage)
+        @foreach($stages->whereBetween('id', [6, 15]) as $stage)
             <div class="pipeline-stage border p-3">
-                <h6>
+                <h6 class="d-flex align-items-center">
                     {{ $stage->name }} 
                     <span class="text-success fw-bold">({{ $stage->leads->count() }})</span>
+                    
+                    <!-- Info Icon -->
+                   <div class="info-icon" data-tooltip="
+    @if($stage->id == 6) Onboarding stage details... 
+    @elseif($stage->id == 7) Design stage details...
+    @elseif($stage->id == 8) P&O stage details...
+    @elseif($stage->id == 9) C&SW stage details...
+    @elseif($stage->id == 10) C&CW stage details...
+    @elseif($stage->id == 11) P&F stage details...
+    @else No details available.
+    @endif
+">
+    i
+</div>
+
                 </h6>
                 <ul class="list-unstyled lead-list" data-stage-id="{{ $stage->id }}">
                     @foreach($stage->leads as $lead)
@@ -185,16 +162,8 @@
                 </ul>
             </div>
         @endforeach
-
-        <!-- Lost Stage -->
-      
     </div>
 </div>
-
-
-
-
-
 
 
         <!-- Table View -->
@@ -221,169 +190,46 @@
     </div>
 
 
+    <!-- Details Panel -->
+    <div id="detailsPanel" class="details-panel">
+        <span class="close-icon" id="closeDetails"><i class="fas fa-times"></i></span>
+        <div class="details-content">
+            <p><span id="detailName"></span> <a href="#" class="activity-link" id="viewActivity">View Activity</a></p>
+            <div class="horizontal-icons">
+                <i class="fas fa-phone" title="Call"></i>
+                <i class="fas fa-comment" title="Message"></i>
+                <i class="fas fa-envelope" title="Email"></i>
+                <i class="fab fa-whatsapp" title="WhatsApp"></i>
+            </div>
+            <a href="#" class="form-link" id="viewFormSubmission">View Form Submission</a>
+            <textarea class="note-textarea" id="note" placeholder="Enter notes here..."></textarea>
 
-<!-- Details Panel -->
-<div id="detailsPanel" class="details-panel">
-    <span class="close-icon" id="closeDetails"><i class="fas fa-times"></i></span>
-    <div class="details-content">
-        <p><span id="detailName"></span> 
-            <a href="#" class="activity-link" id="viewActivity">View Activity</a>
-        </p>
-      <!-- Communication Icons -->
-      <div class="horizontal-icons d-flex gap-3 my-3">
-    <i class="fas fa-phone communication-icon text-primary fs-4" data-type="call" title="Call" style="cursor: pointer;"></i>
-    <i class="fas fa-comment communication-icon text-success fs-4" data-type="message" title="Message" style="cursor: pointer;"></i>
-    <i class="fas fa-envelope communication-icon text-danger fs-4" data-type="email" title="Email" style="cursor: pointer;"></i>
-    <i class="fab fa-whatsapp communication-icon text-success fs-4" data-type="whatsapp" title="WhatsApp" style="cursor: pointer;"></i>
-</div>
-
-
-          <!-- Communication Logs -->
-          <div id="communicationLogs" class="communication-logs mt-3" style="display: none;">
-            <h6>Communication Logs</h6>
-            <ul id="logList" class="list-unstyled border p-2 rounded bg-light">
-                <li>No logs available</li>
-            </ul>
-        </div>
-        
-        <a href="#" class="form-link" data-lead-id="{{ $lead->id }}">View Form Submission</a>
-
-        <textarea class="note-textarea" id="note" placeholder="Enter notes here..."></textarea>
-
-       <div class="vertical-icons">
+            <div class="vertical-icons">
     <h6>Logs</h6>
     <div class="d-flex flex-column align-items-start gap-1">
-        <p class="mb-1 log-link" data-log-type="call" style="cursor: pointer;">
-            <i class="fas fa-phone" title="Call Log"></i> Call Log
-        </p>
-        <p class="mb-1 log-link" data-log-type="whatsapp" style="cursor: pointer;">
-            <i class="fab fa-whatsapp" title="WhatsApp Log"></i> WhatsApp Log
-        </p>
-        <p class="mb-1 log-link" data-log-type="mail" style="cursor: pointer;">
-            <i class="fas fa-envelope" title="Mail Log"></i> Mail Log
-        </p>
-        <p class="mb-1 log-link" data-log-type="meeting" style="cursor: pointer;">
-            <i class="fas fa-calendar-alt" title="Meeting Log"></i> Meeting Log
-        </p>
+        <p class="mb-1"><i class="fas fa-phone" title="Call Log"></i> Call Log</p>
+        <p class="mb-1"><i class="fab fa-whatsapp" title="WhatsApp Log"></i> WhatsApp Log</p>
+        <p class="mb-1"><i class="fas fa-envelope" title="Mail Log"></i> Mail Log</p>
     </div>
 </div>
 
-        <textarea class="task-textarea" id="task" placeholder="Enter task details..."></textarea>
-        <div class="recent-activity mt-3">
+
+            <textarea class="task-textarea" id="task" placeholder="Enter task details..."></textarea>
+            <div class="recent-activity mt-3">
             <h6>Recent Activity</h6>
             <ul id="activityList" class="list-unstyled">
                 <li>No recent activity</li>
             </ul>
         </div>
-        <button class="btn btn-sm btn-primary save-btn" id="saveBtn">Save</button>
-    </div>
-</div>
-
-<!-- Activity Modal -->
-<div class="modal fade" id="activityModal" tabindex="-1" aria-labelledby="activityModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="activityModalLabel">Recent Activity</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <ul id="modalActivityList" class="list-unstyled">
-                    <li>No activity found.</li>
-                </ul>
-            </div>
+            <button class="btn btn-sm btn-primary save-btn" id="saveBtn">Save</button>
         </div>
     </div>
 </div>
-
-<!-- Form Submission Modal -->
-<div class="modal fade" id="formSubmissionModal" tabindex="-1" aria-labelledby="formSubmissionModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="formSubmissionModalLabel">Form Submission Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Name:</strong> <span id="leadName"></span></p>
-                <p><strong>Email:</strong> <span id="leadEmail"></span></p>
-                <p><strong>Phone:</strong> <span id="leadPhone"></span></p>
-                <p><strong>Address:</strong> <span id="leadAddress"></span></p>
-                <p><strong>Source:</strong> <span id="leadSource"></span></p>
-                <p><strong>Stage:</strong> <span id="leadStage"></span></p>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<!-- Logs Modal -->
-<div class="modal fade" id="logsModal" tabindex="-1" aria-labelledby="logsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="logsModalLabel">Log Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p id="logDetails">Log details will be displayed here.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
 
 @endsection
 
 @push('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
-<script>
-    $(document).ready(function () {
-        $(".communication-icon").on("click", function () {
-            let type = $(this).data("type");
-            let logs = getLogs(type);
-
-            // If the same icon is clicked again, toggle visibility
-            if ($("#communicationLogs").is(":visible") && $("#logList").children().length > 0) {
-                $("#communicationLogs").slideUp();
-                return;
-            }
-
-            $("#logList").empty();
-            if (logs.length > 0) {
-                logs.forEach(log => {
-                    $("#logList").append(`<li class="py-1">${log}</li>`);
-                });
-            } else {
-                $("#logList").append("<li>No logs available</li>");
-            }
-
-            $("#communicationLogs").slideDown();
-        });
-
-        // Close logs when clicking outside the log container
-        $(document).on("click", function (event) {
-            if (!$(event.target).closest(".communication-icon, #communicationLogs").length) {
-                $("#communicationLogs").slideUp();
-            }
-        });
-
-        function getLogs(type) {
-            let sampleLogs = {
-                call: ["Call to John - 10 min", "Missed call from Jane"],
-                message: ["Sent: Are you available?", "Received: Yes, call me."],
-                email: ["Sent: Proposal email", "Received: Confirmation from client"],
-                whatsapp: ["Sent: Follow-up message", "Received: Thanks, will review."]
-            };
-            return sampleLogs[type] || [];
-        }
-    });
-</script>
-
 <script>
 $(document).ready(function () {
     // Include SweetAlert2
@@ -560,22 +406,17 @@ $(document).on('click', '.viewBtn, .lead-card', function () {
                     let leadId = $(evt.item).data("lead-id");
                     let newStageId = $(evt.to).data("stage-id");
 
-                    // If moved to Lost stage, set stage_id to 0
-                    if (newStageId === 0) {
-                        newStageId = 0;
-                    }
-
+                    // Send AJAX request using jQuery
                     $.ajax({
-                        url: "{{ route('leads.updateStage') }}",  
+                        url: "{{ route('leads.updateStage') }}",  // Ensure this route is named correctly in web.php
                         method: "POST",
                         data: {
                             lead_id: leadId,
                             stage_id: newStageId,
-                            _token: "{{ csrf_token() }}"
+                            _token: "{{ csrf_token() }}"  // CSRF token for Laravel
                         },
                         success: function (response) {
                             console.log("Lead updated successfully:", response);
-                            location.reload();
                         },
                         error: function (xhr) {
                             console.error("Error updating lead:", xhr.responseText);
@@ -587,10 +428,10 @@ $(document).on('click', '.viewBtn, .lead-card', function () {
     });
 </script>
 
-
 <!--filter stages --->
 
 <script>
+
 $('#applyStageFilter').click(function () {
     let selectedStages = [];
 
@@ -600,65 +441,41 @@ $('#applyStageFilter').click(function () {
 
     // If no checkboxes are selected, send an empty array (to fetch all data)
     if (selectedStages.length === 0) {
-        selectedStages = [];
+        selectedStages = []; 
     }
 
     $.ajax({
         url: "{{ route('leads.filterByStage') }}",
         method: "GET",
-        data: { stages: selectedStages },
+        data: { stages: selectedStages },  
         dataType: "json",
         success: function (response) {
-            let tableBody = '';
+    let tableBody = '';
 
-            if (response.leads.length === 0) {
-                tableBody = '<tr><td colspan="7" class="text-center">No leads found.</td></tr>';
-            } else {
-                response.leads.forEach(lead => {
-                    tableBody += 
-                        `<tr>
-                        <td></td>
-                            <td>${new Date(lead.created_at).toLocaleDateString()}</td>
-                            <td>${lead.name}</td>
-                            <td>${lead.stage ? lead.stage.name : 'N/A'}</td>
-                            <td>${lead.source || 'N/A'}</td>
-                            <td>${lead.assigned_to ? lead.assigned_to.name : 'Unassigned'}</td>
-                            <td>${lead.remember || 'N/A'}</td>
-                            <td>
-                                <button class="btn btn-sm btn-info viewBtn" 
-                                    data-name="${lead.name}"
-                                    data-status="${lead.stage ? lead.stage.name : 'N/A'}"
-                                    data-assigned="${lead.assigned_to ? lead.assigned_to.name : 'Unassigned'}"
-                                    data-date="${lead.created_at}">View</button>
-                            </td>
-                        </tr>`;
-                });
-            }
-            $('#tableBody').html(tableBody);
-
-            // ✅ Update Pipeline View
-            let pipelineHtml = '';
-            response.stages.forEach(stage => {
-                pipelineHtml += `
-                    <div class="pipeline-stage border p-3">
-                        <h6>${stage.name} <span class="text-success fw-bold">(${stage.leads.length})</span></h6>
-                        <ul class="list-unstyled lead-list" data-stage-id="${stage.id}">`;
-                
-                stage.leads.forEach(lead => {
-                    pipelineHtml += `
-                        <li class="border p-2 my-2 lead-card" 
-                            data-lead-id="${lead.id}" 
-                            data-name="${lead.name}"  
-                            draggable="true">
-                            ${lead.name}
-                        </li>`;
-                });
-
-                pipelineHtml += `</ul></div>`;
-            });
-
-            $('.pipeline-container').html(pipelineHtml);
-        },
+    if (response.leads.length === 0) {
+        tableBody = '<tr><td colspan="7" class="text-center">No leads found.</td></tr>';
+    } else {
+        response.leads.forEach(lead => {
+            tableBody += `
+                <tr>
+                    <td>${new Date(lead.created_at).toLocaleDateString()}</td>
+                    <td>${lead.name}</td>
+                    <td>${lead.stage ? lead.stage.name : 'N/A'}</td> <!-- ✅ Fixed -->
+                    <td>${lead.source || 'N/A'}</td>
+                    <td>${lead.assigned_to ? lead.assigned_to.name : 'Unassigned'}</td> <!-- ✅ Fixed -->
+                    <td>${lead.remember || 'N/A'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-info viewBtn" 
+                            data-name="${lead.name}"
+                            data-status="${lead.stage ? lead.stage.name : 'N/A'}"
+                            data-assigned="${lead.assigned_to ? lead.assigned_to.name : 'Unassigned'}"
+                            data-date="${lead.created_at}">View</button>
+                    </td>
+                </tr>`;
+        });
+    }
+    $('#tableBody').html(tableBody);
+},
         error: function (xhr) {
             console.error(xhr.responseText);
             Swal.fire({
@@ -744,7 +561,6 @@ $(document).ready(function () {
             response.leads.forEach(lead => {
                 tableBody += `
                     <tr>
-                    <td></td>
                         <td>${new Date(lead.created_at).toLocaleDateString()}</td>
                         <td>${lead.name}</td>
                         <td>${lead.stage ? lead.stage.name : 'N/A'}</td>
@@ -775,228 +591,8 @@ $(document).ready(function () {
 </script>
 
 <script>
+
 $(document).ready(function () {
-    $('#applySourceFilter').click(function () {
-        let selectedSources = [];
-
-        $('.source-checkbox:checked').each(function () {
-            selectedSources.push($(this).val()); // Collect checked sources
-        });
-
-        $.ajax({
-            url: "{{ route('leads.filterBySource') }}",
-            method: "GET",
-            data: { sources: selectedSources },
-            dataType: "json",
-            success: function (response) {
-                updateLeadsTable(response);
-                updatePipelineView(response); // ✅ Update pipeline view
-            },
-            error: function (xhr) {
-                console.error(xhr.responseText);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Could not filter data.',
-                });
-            }
-        });
-    });
-
-    function updateLeadsTable(response) {
-        let tableBody = '';
-
-        if (response.leads.length === 0) {
-            tableBody = '<tr><td colspan="7" class="text-center">No leads found.</td></tr>';
-        } else {
-            response.leads.forEach(lead => {
-                tableBody += `
-                    <tr>
-                        <td>${new Date(lead.created_at).toLocaleDateString()}</td>
-                        <td>${lead.name}</td>
-                        <td>${lead.stage ? lead.stage.name : 'N/A'}</td>
-                        <td>${lead.source || 'N/A'}</td>
-                        <td>${lead.assigned_to ? lead.assigned_to.name : 'Unassigned'}</td>
-                        <td>${lead.remember || 'N/A'}</td>
-                        <td>
-                            <button class="btn btn-sm btn-info viewBtn" data-name="${lead.name}">View</button>
-                        </td>
-                    </tr>`;
-            });
-        }
-        $('#tableBody').html(tableBody);
-    }
-
-    function updatePipelineView(response) {
-    let pipelineHTML = '';
-
-    response.stages.forEach(stage => {
-        let leadsHTML = stage.leads.map(lead => `
-            <li class="border p-2 my-2 lead-card" 
-                data-lead-id="${lead.id}" 
-                data-name="${lead.name}"  
-                draggable="true">
-                ${lead.name}
-            </li>
-        `).join('');
-
-        pipelineHTML += `
-            <div class="pipeline-stage border p-3">
-                <h6>${stage.name} 
-                    <span class="text-success fw-bold">(${stage.leads.length})</span>
-                </h6>
-                <ul class="list-unstyled lead-list" data-stage-id="${stage.id}">
-                    ${leadsHTML}
-                </ul>
-            </div>`;
-    });
-
-    $('.pipeline-container').html(pipelineHTML);
-
-    // Update lost leads dropdown
-    let lostLeadsHTML = response.lostLeads.length > 0 ? response.lostLeads.map(lead => `
-        <li class="border p-2 my-1 lead-card bg-danger text-white" 
-            data-lead-id="${lead.id}" 
-            data-name="${lead.name}"  
-            draggable="true">
-            ${lead.name}
-        </li>
-    `).join('') : `<li class="text-center text-muted p-2">No lost leads</li>`;
-
-    $('#lostLeadsDropdown').html(lostLeadsHTML);
-
-    // Reinitialize drag-and-drop
-    initializeDragAndDrop();
-}
-
-function initializeDragAndDrop() {
-    $(".lead-card").attr("draggable", true);
-
-    $(".lead-card").on("dragstart", function (event) {
-        event.originalEvent.dataTransfer.setData("leadId", $(this).data("lead-id"));
-    });
-
-    $(".lead-list, #lostLeadsDropdown").on("dragover", function (event) {
-        event.preventDefault();
-    });
-
-    $(".lead-list, #lostLeadsDropdown").on("drop", function (event) {
-        event.preventDefault();
-        let leadId = event.originalEvent.dataTransfer.getData("leadId");
-        let leadElement = $(`.lead-card[data-lead-id="${leadId}"]`);
-        
-        if (leadElement.length) {
-            $(this).append(leadElement);
-            let newStageId = $(this).data("stage-id") || 0; // 0 for Lost
-
-            // AJAX request to update lead's stage
-            $.ajax({
-                url: "/update-lead-stage",
-                type: "POST",
-                data: {
-                    lead_id: leadId,
-                    stage_id: newStageId,
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function (response) {
-                    console.log("Lead moved successfully.");
-                },
-                error: function (error) {
-                    console.error("Error updating lead stage:", error);
-                }
-            });
-        }
-    });
-}
-
-
-
-
-});
-
-
-</script>
-
-
-
-
-
-<script>
-    
-$(document).ready(function () {
-    // Assigned To Filter
-    $('#applyAssignedFilter').click(function () {
-        let selectedUsers = [];
-
-        $('.assigned-checkbox:checked').each(function () {
-            selectedUsers.push($(this).val());
-        });
-
-        $.ajax({
-            url: "{{ route('leads.filterByAssigned') }}",
-            method: "GET",
-            data: { assigned_to: selectedUsers },
-            dataType: "json",
-            success: function (response) {
-                updateLeadsTableAndPipeline(response);
-            },
-            error: function (xhr) {
-                console.error(xhr.responseText);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Could not filter assigned data.',
-                });
-            }
-        });
-    });
-
-    function updateLeadsTableAndPipeline(response) {
-        let tableBody = '';
-
-        if (response.leads.length === 0) {
-            tableBody = '<tr><td colspan="7" class="text-center">No leads found.</td></tr>';
-        } else {
-            response.leads.forEach(lead => {
-                tableBody += `
-                    <tr>
-                    <td></td>
-                        <td>${new Date(lead.created_at).toLocaleDateString()}</td>
-                        <td>${lead.name}</td>
-                        <td>${lead.stage ? lead.stage.name : 'N/A'}</td>
-                        <td>${lead.source || 'N/A'}</td>
-                        <td>${lead.assigned_to ? lead.assigned_to.name : 'Unassigned'}</td>
-                        <td>${lead.remember || 'N/A'}</td>
-                        <td>
-                            <button class="btn btn-sm btn-info viewBtn" data-name="${lead.name}">View</button>
-                        </td>
-                    </tr>`;
-            });
-        }
-        $('#tableBody').html(tableBody);
-
-        let pipelineHTML = '';
-        response.stages.forEach(stage => {
-            let leadsHTML = '';
-            stage.leads.forEach(lead => {
-                leadsHTML += `<li class="border p-2 my-2 lead-card" draggable="true">${lead.name}</li>`;
-            });
-
-            pipelineHTML += `<div class="pipeline-stage border p-3"><h6>${stage.name}</h6><ul class="list-unstyled lead-list">${leadsHTML}</ul></div>`;
-        });
-
-        $('.pipeline-container').html(pipelineHTML);
-    }
-});
-</script>
-
-
-<script>
-$(document).ready(function () {
-    // Set the max date to today to disable future dates
-    let today = new Date().toISOString().split('T')[0];
-    $('#datePicker').attr('max', today);
-
     // Show Date Picker when button is clicked
     $('#dateFilterBtn').click(function () {
         $('#datePicker').toggleClass('d-none').focus(); // Toggle visibility and focus
@@ -1038,7 +634,6 @@ $(document).ready(function () {
             response.leads.forEach(lead => {
                 tableBody += `
                     <tr>
-                    <td></td>
                         <td>${new Date(lead.created_at).toLocaleDateString()}</td>
                         <td>${lead.name}</td>
                         <td>${lead.stage ? lead.stage.name : 'N/A'}</td>
@@ -1066,8 +661,8 @@ $(document).ready(function () {
         $('.pipeline-container').html(pipelineHTML);
     }
 });
-</script>
 
+</script>
 
 
 <script>
@@ -1250,173 +845,4 @@ $(document).ready(function () {
 });
 
     </script>
-    
-    
-
-<script>
-$(document).ready(function () {
-    // Open Activity Modal
-    $("#viewActivity").click(function (e) {
-        e.preventDefault();
-        $("#activityModal").modal("show");
-    });
-
-    // Open Form Submission Modal
-    $("#viewFormSubmission").click(function (e) {
-        e.preventDefault();
-        $("#formSubmissionModal").modal("show");
-    });
-
-    // Open Logs Modal
-    $(".log-link").click(function (e) {
-        e.preventDefault();
-        let logType = $(this).data("log-type");
-        let logText = "";
-
-        switch (logType) {
-            case "call":
-                logText = "Call Log details here.";
-                break;
-            case "whatsapp":
-                logText = "WhatsApp Log details here.";
-                break;
-            case "mail":
-                logText = "Mail Log details here.";
-                break;
-            case "meeting":
-                logText = "Meeting Log details here.";
-                break;
-        }
-
-        $("#logDetails").text(logText);
-        $("#logsModal").modal("show");
-    });
-});
-</script>
-
-<script>
-    $(document).ready(function () {
-    $('.form-link').click(function (e) {
-        e.preventDefault();
-        
-        let leadId = $(this).data('lead-id'); // Ensure this ID is set in the button/link
-        $.ajax({
-            url: `/leads/${leadId}/details`, // Update with your actual route
-            method: "GET",
-            dataType: "json",
-            success: function (response) {
-                if (response.success) {
-                    $('#leadName').text(response.lead.name);
-                    $('#leadEmail').text(response.lead.email || 'N/A');
-                    $('#leadPhone').text(response.lead.mobile_number || 'N/A');
-                    $('#leadAddress').text(response.lead.address || 'N/A');
-                    $('#leadSource').text(response.lead.source || 'N/A');
-                    $('#leadStage').text(response.lead.stage ? response.lead.stage.name : 'N/A');
-                    
-                    $('#formSubmissionModal').modal('show'); // Show the modal
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: 'Lead details could not be loaded.',
-                    });
-                }
-            },
-            error: function (xhr) {
-                console.error(xhr.responseText);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'An error occurred while fetching lead details.',
-                });
-            }
-        });
-    });
-});
-
-</script>
-
-<script>
-$(document).ready(function () {
-    $('.activity-option').click(function () {
-        let selectedActivity = $(this).data('value'); // Get selected activity
-
-        $.ajax({
-            url: "{{ route('leads.filterByActivity') }}",
-            method: "GET",
-            data: { activity: selectedActivity },
-            dataType: "json",
-            success: function (response) {
-                let tableBody = '';
-
-                // ✅ Update Table View
-                if (response.leads.length === 0) {
-                    tableBody = '<tr><td colspan="7" class="text-center">No leads found.</td></tr>';
-                } else {
-                    response.leads.forEach(lead => {
-                        tableBody += 
-                            `<tr>
-                                <td></td>
-                                <td>${new Date(lead.created_at).toLocaleDateString()}</td>
-                                <td>${lead.name}</td>
-                                <td>${lead.stage ? lead.stage.name : 'N/A'}</td>
-                                <td>${lead.source || 'N/A'}</td>
-                                <td>${lead.assigned_to ? lead.assigned_to.name : 'Unassigned'}</td>
-                                <td>${lead.remember || 'N/A'}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-info viewBtn" 
-                                        data-name="${lead.name}"
-                                        data-status="${lead.stage ? lead.stage.name : 'N/A'}"
-                                        data-assigned="${lead.assigned_to ? lead.assigned_to.name : 'Unassigned'}"
-                                        data-date="${lead.created_at}">View</button>
-                                </td>
-                            </tr>`;
-                    });
-                }
-                $('#tableBody').html(tableBody);
-
-                // ✅ Update Pipeline View (Ensure Stages 1-6)
-                let pipelineHtml = '';
-                response.stages.forEach(stage => {
-                    if (stage.id >= 1 && stage.id <= 6) { // ✅ Only show stages 1-6
-                        pipelineHtml += `
-                            <div class="pipeline-stage border p-3">
-                                <h6>${stage.name} <span class="text-success fw-bold">(${stage.leads.length})</span></h6>
-                                <ul class="list-unstyled lead-list" data-stage-id="${stage.id}">`;
-
-                        stage.leads.forEach(lead => { // ✅ Display leads in the correct stage
-                            pipelineHtml += `
-                                <li class="border p-2 my-2 lead-card" 
-                                    data-lead-id="${lead.id}" 
-                                    data-name="${lead.name}"  
-                                    draggable="true">
-                                    ${lead.name}
-                                </li>`;
-                        });
-
-                        pipelineHtml += `</ul></div>`;
-                    }
-                });
-
-                $('.pipeline-container').html(pipelineHtml); // ✅ Replace Pipeline View
-            },
-            error: function (xhr) {
-                console.error(xhr.responseText);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Could not filter data.',
-                });
-            }
-        });
-    });
-});
-
-</script>
-
-
-
-
 @endpush
-
-
