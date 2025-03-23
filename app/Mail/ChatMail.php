@@ -24,7 +24,7 @@ class ChatMail extends Mailable
     {
         return $this->from(env('MAIL_FROM_ADDRESS'))
                     ->subject($this->data['subject'])
-                    ->view('emails.chat_mail')
+                    ->view('chat_mail')
                     ->with('data', $this->data);
     }
 }

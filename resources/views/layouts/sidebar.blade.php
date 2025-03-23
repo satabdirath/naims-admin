@@ -1,25 +1,4 @@
-<style>
-    .sidebar {
-        width: 250px;
-        transition: width 0.3s;
-    }
 
-    .sidebar.collapsed {
-        width: 85px;
-    }
-
-    .sidebar.collapsed h5,
-    .sidebar.collapsed button span {
-        display: none;
-    }
-
-    .menu-toggle {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        cursor: pointer;
-    }
-</style>
 
 <div class="sidebar border-end" id="sidebar">
     <div class="menu-toggle" onclick="toggleSidebar()">

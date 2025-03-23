@@ -9,6 +9,8 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ChatController;
 use Illuminate\Http\Request;
 use App\Models\Lead;
+use App\Http\Controllers\MailboxController;
+
 
 
 Route::get('/', function () {
@@ -96,5 +98,12 @@ Route::get('/leads/{id}/details', [LeadController::class, 'getLeadDetails']);
 Route::get('/chats', [ChatController::class, 'index'])->name('chats.index');
 Route::post('/send-mail', [ChatController::class, 'sendMail'])->name('send.mail');
 
+
+
+Route::get('/emails/inbox', [MailboxController::class, 'getEmails']);
+Route::get('/emails/drafts', fn() => (new MailboxController)->getEmails('Drafts')); // Adjust as needed
+Route::get('/emails/templates', fn() => (new MailboxController)->getEmails('Templates'));
+
+Route::get('/listFolders', [MailboxController::class, 'listFolders']);
 
 require __DIR__.'/auth.php';
